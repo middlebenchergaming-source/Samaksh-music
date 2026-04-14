@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMAKSH MUSIC - Free Music Streaming App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============ RESET & BASE ============ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0a0a0a; color: #ffffff; overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* ============ NAVBAR ============ */
+        .navbar { position: fixed; top: 0; width: 100%; padding: 18px 60px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease; }
+        .navbar .logo { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 800; }
+        .logo i { color: #8b5cf6; font-size: 1.6rem; }
+        .logo span { background: linear-gradient(135deg, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
+        .navbar .nav-links { display: flex; gap: 35px; }
+        .nav-links li a { font-size: 0.95rem; font-weight: 500; color: #aaa; transition: color 0.3s; position: relative; }
+        .nav-links li a:hover { color: #fff; }
+        .nav-links li a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: linear-gradient(135deg, #8b5cf6, #ec4899); transition: width 0.3s; }
+        .nav-links li a:hover::after { width: 100%; }
+        .navbar .nav-btn { padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff; transition: transform 0.3s, box-shadow 0.3s; }
+        .navbar .nav-btn:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(139, 92, 246, 0.4); }
+        .hamburger { display: none; font-size: 1.5rem; cursor: pointer; color: #fff; }
+
+        /* ============ HERO SECTION ============ */
+        .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 120px 20px 80px; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(236, 72, 153, 0.08) 0%, transparent 50%); animation: rotateGradient 20s linear infinite; }
+        @keyframes rotateGradient { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .hero-content { position: relative; z-index: 1; max-width: 800px; }
+        .hero-badge { display: inline-block; padding: 8px 20px; border-radius: 50px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); font-size: 0.85rem; font-weight: 600; color: #a78bfa; margin-bottom: 30px; animation: fadeInDown 1s ease; }
+        .hero h1 { font-size: 4rem; font-weight: 900; line-height: 1.1; margin-bottom: 24px; animation: fadeInUp 1s ease; }
+        .hero h1 .gradient-text { background: linear-gradient(135deg, #8b5cf6, #ec4899, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 1.2rem; color: #888; max-width: 600px; margin: 0 auto 40px; line-height: 1.7; animation: fadeInUp 1s ease 0.2s both; }
+        .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; animation: fadeInUp 1s ease 0.4s both; }
+        .btn-primary { padding: 16px 36px; border-radius: 50px; border: none; cursor: pointer; font-size: 1rem; font-weight: 700; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff; transition: transform 0.3s, box-shadow 0.3s; display: flex; align-items: center; gap: 10px; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 40px rgba(139, 92, 246, 0.4); }
+        .btn-secondary { padding: 16px 36px; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.15); cursor: pointer; font-size: 1rem; font-weight: 700; background: rgba(255, 255, 255, 0.05); color: #fff; transition: transform 0.3s, background 0.3s; display: flex; align-items: center; gap: 10px; }
+        .btn-secondary:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.1); }
+
+        /* ============ FLOATING MUSIC VISUAL ============ */
+        .hero-visual { margin-top: 60px; position: relative; animation: fadeInUp 1s ease 0.6s both; }
+        .music-player-preview { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 30px; max-width: 500px; margin: 0 auto; backdrop-filter: blur(20px); }
+        .player-album-art { width: 100%; height: 250px; background: linear-gradient(135deg, #667eea, #764ba2, #f093fb); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; position: relative; overflow: hidden; }
+        .player-album-art i { font-size: 4rem; color: rgba(255, 255, 255, 0.8); z-index: 1; }
+        .player-album-art::after { content: ''; position: absolute; width: 150%; height: 150%; background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%); animation: pulse 3s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } }
+        .player-info { text-align: left; }
+        .player-info h3 { font-size: 1.2rem; margin-bottom: 4px; }
+        .player-info p { font-size: 0.9rem; color: #888; margin: 0; }
+        .player-progress { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; margin: 20px 0; position: relative; overflow: hidden; }
+        .player-progress::after { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 45%; background: linear-gradient(135deg, #8b5cf6, #ec4899); border-radius: 4px; animation: progress 5s ease-in-out infinite; }
+        @keyframes progress { 0% { width: 20%; } 50% { width: 70%; } 100% { width: 20%; } }
+        .player-controls { display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 16px; }
+        .player-controls i { font-size: 1.2rem; color: #aaa; cursor: pointer; transition: color 0.3s, transform 0.3s; }
+        .player-controls i:hover { color: #fff; transform: scale(1.2); }
+        .player-controls .play-btn { font-size: 1.6rem; color: #fff; background: linear-gradient(135deg, #8b5cf6, #ec4899); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .player-controls .play-btn:hover { transform: scale(1.15); }
+
+        /* ============ STATS SECTION ============ */
+        .stats { padding: 60px 20px; display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; border-top: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .stat-item { text-align: center; }
+        .stat-item h2 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-item p { color: #888; font-size: 0.95rem; margin-top: 4px; }
+
+        /* ============ FEATURES SECTION ============ */
+        .features { padding: 100px 60px; }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header .tag { display: inline-block; padding: 6px 16px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 50px; font-size: 0.8rem; font-weight: 600; color: #a78bfa; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+        .section-header h2 { font-size: 2.8rem; font-weight: 800; margin-bottom: 16px; }
+        .section-header p { color: #888; font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; max-width: 1200px; margin: 0 auto; }
+        .feature-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; padding: 36px; transition: transform 0.3s, border-color 0.3s, background 0.3s; position: relative; overflow: hidden; }
+        .feature-card:hover { transform: translateY(-8px); border-color: rgba(139, 92, 246, 0.3); background: rgba(255, 255, 255, 0.05); }
+        .feature-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top left, rgba(139, 92, 246, 0.08), transparent 70%); opacity: 0; transition: opacity 0.3s; }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-icon { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 20px; position: relative; z-index: 1; }
+        .feature-icon.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+        .feature-icon.pink { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
+        .feature-icon.blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .feature-icon.green { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .feature-icon.orange { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .feature-icon.red { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .feature-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; position: relative; z-index: 1; }
+        .feature-card p { color: #888; font-size: 0.95rem; line-height: 1.6; position: relative; z-index: 1; }
+
+        /* ============ HOW IT WORKS ============ */
+        .how-it-works { padding: 100px 60px; background: rgba(255, 255, 255, 0.02); }
+        .steps-container { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; max-width: 1000px; margin: 0 auto; }
+        .step { text-align: center; flex: 1; min-width: 220px; max-width: 280px; position: relative; }
+        .step-number { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #8b5cf6, #ec4899); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; margin: 0 auto 20px; position: relative; }
+        .step-number::after { content: ''; position: absolute; width: 90px; height: 90px; border-radius: 50%; border: 2px solid rgba(139, 92, 246, 0.2); }
+        .step h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; }
+        .step p { color: #888; font-size: 0.9rem; line-height: 1.6; }
+
+        /* ============ SCREENSHOTS SECTION ============ */
+        .screenshots { padding: 100px 60px; }
+        .screenshots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; max-width: 1100px; margin: 0 auto; }
+        .screenshot-card { background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1)); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; transition: transform 0.3s; position: relative; overflow: hidden; }
+        .screenshot-card:hover { transform: scale(1.03); }
+        .screenshot-card i { font-size: 3rem; color: rgba(255, 255, 255, 0.3); }
+        .screenshot-card span { color: #aaa; font-size: 0.9rem; font-weight: 600; }
+        .screenshot-card .mock-ui { width: 80%; display: flex; flex-direction: column; gap: 12px; }
+        .mock-bar { height: 10px; background: rgba(255, 255, 255, 0.08); border-radius: 5px; }
+        .mock-bar.short { width: 60%; }
+        .mock-bar.medium { width: 80%; }
+        .mock-square { width: 100%; height: 120px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; }
+
+        /* ============ TESTIMONIALS ============ */
+        .testimonials { padding: 100px 60px; background: rgba(255, 255, 255, 0.02); }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; max-width: 1200px; margin: 0 auto; }
+        .testimonial-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; padding: 32px; transition: transform 0.3s; }
+        .testimonial-card:hover { transform: translateY(-4px); }
+        .testimonial-stars { color: #f59e0b; font-size: 0.9rem; margin-bottom: 16px; display: flex; gap: 4px; }
+        .testimonial-card blockquote { font-size: 1rem; color: #ccc; line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+        .testimonial-author { display: flex; align-items: center; gap: 12px; }
+        .author-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #8b5cf6, #ec4899); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; }
+        .author-info h4 { font-size: 0.95rem; font-weight: 700; }
+        .author-info p { font-size: 0.8rem; color: #888; margin: 0; }
+
+        /* ============ FAQ SECTION ============ */
+        .faq { padding: 100px 60px; }
+        .faq-container { max-width: 750px; margin: 0 auto; }
+        .faq-item { border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 24px 0; }
+        .faq-question { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 1.1rem; font-weight: 600; transition: color 0.3s; }
+        .faq-question:hover { color: #a78bfa; }
+        .faq-question i { transition: transform 0.3s; color: #8b5cf6; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; color: #888; line-height: 1.7; font-size: 0.95rem; }
+        .faq-item.active .faq-answer { max-height: 200px; padding-top: 16px; }
+        .faq-item.active .faq-question i { transform: rotate(180deg); }
+
+        /* ============ CTA SECTION ============ */
+        .cta { padding: 100px 20px; text-align: center; position: relative; }
+        .cta-box { max-width: 700px; margin: 0 auto; background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15)); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 32px; padding: 60px 40px; position: relative; overflow: hidden; }
+        .cta-box::before { content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(236, 72, 153, 0.1), transparent 70%); }
+        .cta-box h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 16px; position: relative; z-index: 1; }
+        .cta-box p { color: #aaa; font-size: 1.1rem; margin-bottom: 32px; position: relative; z-index: 1; }
+        .cta-buttons { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; position: relative; z-index: 1; }
+
+        /* ============ FOOTER ============ */
+        .footer { padding: 60px 60px 30px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+        .footer-content { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; }
+        .footer-brand .logo { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 800; margin-bottom: 16px; }
+        .footer-brand p { color: #888; font-size: 0.9rem; line-height: 1.7; margin-bottom: 20px; }
+        .social-links { display: flex; gap: 12px; }
+        .social-links a { width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.06); display: flex; align-items: center; justify-content: center; color: #aaa; transition: background 0.3s, color 0.3s, transform 0.3s; }
+        .social-links a:hover { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff; transform: translateY(-3px); }
+        .footer-column h4 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: #fff; }
+        .footer-column ul li { margin-bottom: 10px; }
+        .footer-column ul li a { color: #888; font-size: 0.9rem; transition: color 0.3s; }
+        .footer-column ul li a:hover { color: #a78bfa; }
+        .footer-bottom { text-align: center; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.05); color: #555; font-size: 0.85rem; }
+
+        /* ============ ANIMATIONS ============ */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ============ SCROLL ANIMATIONS ============ */
+        .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 768px) {
+            .navbar { padding: 16px 20px; }
+            .nav-links { display: none !important; }
+            .navbar .nav-btn { display: none; }
+            .hamburger { display: block; }
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1rem; }
+            .features, .how-it-works, .screenshots, .testimonials, .faq, .cta { padding: 60px 20px; }
+            .section-header h2 { font-size: 2rem; }
+            .stats { gap: 30px; }
+            .footer-content { grid-template-columns: 1fr; }
+            .footer { padding: 40px 20px 20px; }
+            .cta-box h2 { font-size: 1.8rem; }
+        }
+
+        /* ============ MOBILE MENU ============ */
+        .mobile-menu { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 10, 0.98); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 30px; }
+        .mobile-menu.active { display: flex; }
+        .mobile-menu a { font-size: 1.5rem; font-weight: 600; color: #ccc; transition: color 0.3s; }
+        .mobile-menu a:hover { color: #8b5cf6; }
+        .mobile-menu .close-btn { position: absolute; top: 24px; right: 24px; font-size: 1.8rem; cursor: pointer; color: #fff; }
+
+        /* ============ EQUALIZER ANIMATION ============ */
+        .equalizer { display: flex; align-items: flex-end; gap: 3px; height: 30px; }
+        .equalizer .bar { width: 4px; background: linear-gradient(to top, #8b5cf6, #ec4899); border-radius: 2px; animation: equalize 0.8s ease-in-out infinite alternate; }
+        .equalizer .bar:nth-child(1) { animation-delay: 0s; height: 10px; }
+        .equalizer .bar:nth-child(2) { animation-delay: 0.1s; height: 20px; }
+        .equalizer .bar:nth-child(3) { animation-delay: 0.2s; height: 15px; }
+        .equalizer .bar:nth-child(4) { animation-delay: 0.3s; height: 25px; }
+        .equalizer .bar:nth-child(5) { animation-delay: 0.15s; height: 12px; }
+        @keyframes equalize { 0% { height: 5px; } 100% { height: 28px; } }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-compact-disc"></i>
+            <span>SAMAKSH MUSIC</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#screenshots">Screenshots</a></li>
+            <li><a href="#testimonials">Reviews</a></li>
+            <li><a href="#faq">FAQ</a></li>
+        </ul>
+        <button class="nav-btn" onclick="window.open('#download')">
+            <i class="fab fa-github"></i> Download
+        </button>
+        <div class="hamburger" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="close-btn" onclick="toggleMobileMenu()">
+            <i class="fas fa-times"></i>
+        </div>
+        <a href="#features" onclick="toggleMobileMenu()">Features</a>
+        <a href="#how-it-works" onclick="toggleMobileMenu()">How It Works</a>
+        <a href="#screenshots" onclick="toggleMobileMenu()">Screenshots</a>
+        <a href="#testimonials" onclick="toggleMobileMenu()">Reviews</a>
+        <a href="#faq" onclick="toggleMobileMenu()">FAQ</a>
+        <a href="#download" onclick="toggleMobileMenu()">Download</a>
+    </div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <div class="equalizer" style="display:inline-flex; margin-right: 8px; vertical-align: middle;">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+                Open Source &bull; Free Forever
+            </div>
+            <h1>Stream Music <br><span class="gradient-text">Without Limits</span></h1>
+            <p>SAMAKSH MUSIC is a beautiful, open-source music streaming app for Android. Enjoy ad-free music, background playback, and offline caching &mdash; all without a subscription.</p>
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="window.open('https://github.com')">
+                    <i class="fab fa-github"></i> Download APK
+                </button>
+                <button class="btn-secondary" onclick="window.open('https://github.com')">
+                    <i class="fas fa-code"></i> View Source
+                </button>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="music-player-preview">
+                    <div class="player-album-art">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="player-info">
+                        <h3>Dreaming in Color</h3>
+                        <p>Synthwave Artist &bull; Neon Dreams</p>
+                    </div>
+                    <div class="player-progress"></div>
+                    <div class="player-controls">
+                        <i class="fas fa-shuffle"></i>
+                        <i class="fas fa-backward-step"></i>
+                        <div class="play-btn"><i class="fas fa-pause"></i></div>
+                        <i class="fas fa-forward-step"></i>
+                        <i class="fas fa-repeat"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stat-item reveal">
+            <h2>500K+</h2>
+            <p>Downloads</p>
+        </div>
+        <div class="stat-item reveal">
+            <h2>15K+</h2>
+            <p>GitHub Stars</p>
+        </div>
+        <div class="stat-item reveal">
+            <h2>100M+</h2>
+            <p>Songs Available</p>
+        </div>
+        <div class="stat-item reveal">
+            <h2>4.8</h2>
+            <p>User Rating</p>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="section-header reveal">
+            <div class="tag">Features</div>
+            <h2>Everything You Need</h2>
+            <p>Packed with powerful features that make your music experience seamless and enjoyable.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon purple">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <h3>Ad-Free Experience</h3>
+                <p>No more interruptions. Enjoy your music without any audio or visual advertisements getting in the way.</p>
+            </div>
+            
+            <div class="feature-card reveal">
+                <div class="feature-icon pink">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+                <h3>Background Playback</h3>
+                <p>Keep your music playing while using other apps or when your screen is turned off. No premium needed.</p>
+            </div>
+            
+            <div class="feature-card reveal">
+                <div class="feature-icon blue">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h3>Offline Caching</h3>
+                <p>Cache your favorite songs for offline listening. Perfect for commutes, flights, or areas with no signal.</p>
+            </div>
+            
+            <div class="feature-card reveal">
+                <div class="feature-icon green">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>Powerful Search</h3>
+                <p>Search through millions of songs, artists, albums, and playlists from YouTube Music's vast library.</p>
+            </div>
+            
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <h3>Material You Design</h3>
+                <p>Beautiful, modern UI that adapts to your device's color theme. A premium look with zero cost.</p>
+            </div>
+            
+            <div class="feature-card reveal">
+                <div class="feature-icon red">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+                <h3>Privacy Focused</h3>
+                <p>No account required, no tracking, no data collection. Your music, your privacy. Fully open source.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-header reveal">
+            <div class="tag">Simple Setup</div>
+            <h2>Up and Running in Minutes</h2>
+            <p>Getting started with SAMAKSH MUSIC is incredibly easy. No accounts, no subscriptions.</p>
+        </div>
+        
+        <div class="steps-container">
+            <div class="step reveal">
+                <div class="step-number">1</div>
+                <h3>Download APK</h3>
+                <p>Head to our GitHub releases page and download the latest APK file for your device.</p>
+            </div>
+            <div class="step reveal">
+                <div class="step-number">2</div>
+                <h3>Install & Open</h3>
+                <p>Enable &ldquo;Install from Unknown Sources&rdquo; in your settings, then install and launch the app.</p>
+            </div>
+            <div class="step reveal">
+                <div class="step-number">3</div>
+                <h3>Start Listening</h3>
+                <p>Search for any song, artist, or playlist and enjoy unlimited, ad-free music streaming instantly.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="screenshots" id="screenshots">
+        <div class="section-header reveal">
+            <div class="tag">Preview</div>
+            <h2>Beautiful Interface</h2>
+            <p>A sleek, intuitive design that puts your music first.</p>
+        </div>
+        
+        <div class="screenshots-grid">
+            <div class="screenshot-card reveal">
+                <i class="fas fa-house"></i>
+                <span>Home Screen</span>
+                <div class="mock-ui">
+                    <div class="mock-bar short"></div>
+                    <div class="mock-square"></div>
+                    <div class="mock-bar medium"></div>
+                    <div class="mock-bar short"></div>
+                </div>
+            </div>
+            <div class="screenshot-card reveal">
+                <i class="fas fa-magnifying-glass"></i>
+                <span>Search</span>
+                <div class="mock-ui">
+                    <div class="mock-bar"></div>
+                    <div class="mock-bar medium"></div>
+                    <div class="mock-bar short"></div>
+                    <div class="mock-square"></div>
+                </div>
+            </div>
+            <div class="screenshot-card reveal">
+                <i class="fas fa-compact-disc"></i>
+                <span>Now Playing</span>
+                <div class="mock-ui">
+                    <div class="mock-square" style="height:160px;"></div>
+                    <div class="mock-bar medium"></div>
+                    <div class="mock-bar short"></div>
+                </div>
+            </div>
+            <div class="screenshot-card reveal">
+                <i class="fas fa-list"></i>
+                <span>Playlists</span>
+                <div class="mock-ui">
+                    <div class="mock-bar short"></div>
+                    <div class="mock-bar"></div>
+                    <div class="mock-bar medium"></div>
+                    <div class="mock-bar"></div>
+                    <div class="mock-bar short"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials" id="testimonials">
+        <div class="section-header reveal">
+            <div class="tag">Reviews</div>
+            <h2>Loved by Users</h2>
+            <p>See what the community has to say about SAMAKSH MUSIC.</p>
+        </div>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial-card reveal">
+                <div class="testimonial-stars">
+                    <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i>
+                </div>
+                <blockquote>&ldquo;Finally, an app that lets me listen to music without being bombarded by ads every 2 minutes. SAMAKSH MUSIC is a game changer!&rdquo;</blockquote>
+                <div class="testimonial-author">
+                    <div class="author-avatar">A</div>
+                    <div class="author-info">
+                        <h4>Alex Rivera</h4>
+                        <p>Android Enthusiast</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card reveal">
+                <div class="testimonial-stars">
+                    <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i>
+                </div>
+                <blockquote>&ldquo;The UI is absolutely gorgeous. I love that it uses Material You colors. It feels like a premium app, but it&rsquo;s completely free and open source.&rdquo;</blockquote>
+                <div class="testimonial-author">
+                    <div class="author-avatar">S</div>
+                    <div class="author-info">
+                        <h4>Sarah Chen</h4>
+                        <p>UI/UX Designer</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card reveal">
+                <div class="testimonial-stars">
+                    <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star-half-alt"></i>
+                </div>
+                <blockquote>&ldquo;Background playback without paying for premium? Sign me up. I use this app every single day during my commute. Highly recommended!&rdquo;</blockquote>
+                <div class="testimonial-author">
+                    <div class="author-avatar">M</div>
+                    <div class="author-info">
+                        <h4>Marcus Johnson</h4>
+                        <p>Music Lover</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq" id="faq">
+        <div class="section-header reveal">
+            <div class="tag">FAQ</div>
+            <h2>Frequently Asked Questions</h2>
+            <p>Got questions? We&rsquo;ve got answers.</p>
+        </div>
+        
+        <div class="faq-container">
+            <div class="faq-item reveal">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Is SAMAKSH MUSIC really free?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes! SAMAKSH MUSIC is 100% free and open source. There are no hidden charges, no subscriptions, and no in-app purchases. The full source code is available on GitHub.
+                </div>
+            </div>
+            
+            <div class="faq-item reveal">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Is it safe to install?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    As long as you download the APK from the official GitHub repository, it is safe. The code is open source and can be reviewed by anyone. Avoid downloading from third-party websites.
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Where does the music come from?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    SAMAKSH MUSIC streams music from YouTube Music&rsquo;s public API. This gives you access to millions of songs, albums, artists, and playlists without needing a YouTube Music account.
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Do I need to create an account?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    No! SAMAKSH MUSIC does not require any account or login. Simply install the app and start listening. Your playlists and preferences are stored locally on your device.
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Is it available for iOS?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Currently, SAMAKSH MUSIC is only available for Android devices. There is no official iOS version at this time, but you can check the GitHub repository for any future developments.
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Can I contribute to the project?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! SAMAKSH MUSIC is an open-source project and welcomes contributions. You can submit bug reports, feature requests, or pull requests on the GitHub repository. Every contribution helps!
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta" id="download">
+        <div class="cta-box reveal">
+            <h2>Ready to Start Listening?</h2>
+            <p>Download SAMAKSH MUSIC now and experience music streaming the way it should be &mdash; free, beautiful, and private.</p>
+            <div class="cta-buttons">
+                <button class="btn-primary" onclick="window.open('https://github.com')">
+                    <i class="fab fa-github"></i> Download from GitHub
+                </button>
+                <button class="btn-secondary" onclick="window.open('https://github.com')">
+                    <i class="fas fa-star"></i> Star on GitHub
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="logo">
+                    <i class="fas fa-compact-disc" style="color:#8b5cf6;"></i>
+                    <span style="background:linear-gradient(135deg,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SAMAKSH MUSIC</span>
+                </div>
+                <p>An open-source music streaming app for Android. Stream millions of songs ad-free with a beautiful, privacy-focused experience.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#screenshots">Screenshots</a></li>
+                    <li><a href="#download">Download</a></li>
+                    <li><a href="#">Changelog</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#">Report Bug</a></li>
+                    <li><a href="#">Request Feature</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="#">GitHub</a></li>
+                    <li><a href="#">Discord</a></li>
+                    <li><a href="#">Telegram</a></li>
+                    <li><a href="#">Contributing</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 SAMAKSH MUSIC. Open source project released under MIT License. Made with <i class="fas fa-heart" style="color:#ec4899;"></i> by the community.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ---- FAQ Toggle ----
+        function toggleFaq(element) {
+            const faqItem = element.parentElement;
+            const allItems = document.querySelectorAll('.faq-item');
+            
+            allItems.forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('active');
+                }
+            });
+            
+            faqItem.classList.toggle('active');
+        }
+
+        // ---- Mobile Menu ----
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('active');
+        }
+
+        // ---- Scroll Reveal ----
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // ---- Navbar Scroll Effect ----
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.padding = '12px 60px';
+                navbar.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+            } else {
+                navbar.style.padding = '18px 60px';
+                navbar.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+            }
+        });
+
+        // ---- Player Controls Interaction ----
+        const playBtn = document.querySelector('.play-btn');
+        let isPlaying = true;
+
+        playBtn?.addEventListener('click', () => {
+            const icon = playBtn.querySelector('i');
+            if (isPlaying) {
+                icon.className = 'fas fa-play';
+                document.querySelectorAll('.equalizer .bar').forEach(bar => {
+                    bar.style.animationPlayState = 'paused';
+                });
+            } else {
+                icon.className = 'fas fa-pause';
+                document.querySelectorAll('.equalizer .bar').forEach(bar => {
+                    bar.style.animationPlayState = 'running';
+                });
+            }
+            isPlaying = !isPlaying;
+        });
+    </script>
+</body>
+</html>
